@@ -1,0 +1,22 @@
+# H2 database files (persistent)
+data/
+
+# Ignore local configuration
+config.properties
+
+# Maven target and compiled files
+target/
+*.class
+*.jar
+
+# IDE files
+.idea/
+*.iml
+out/
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
