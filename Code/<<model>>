@@ -5,8 +5,13 @@ class Model{
 }
 
 class User extends Model{
+  //this might be the private/protected/public part of the class
   int userID;
-  
+  string Username;
+  string Password;
+  bool role;//1 for admin, 0 for user
+  string fullName;
+  string email;
 }
 
 class Tool extends Model{
