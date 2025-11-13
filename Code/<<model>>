@@ -1,1 +1,14 @@
 //model is the parent class to user and tool
+
+class Model{
+//put code here
+}
+
+class User extends Model{
+  int userID;
+  
+}
+
+class Tool extends Model{
+
+}
