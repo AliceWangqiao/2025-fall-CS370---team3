@@ -15,5 +15,9 @@ class User extends Model{
 }
 
 class Tool extends Model{
-
+  int toolID;
+  string type;
+  int toolCondition;
+  string whoHas;
+  string damageReport;
 }
