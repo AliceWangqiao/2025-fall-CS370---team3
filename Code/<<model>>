@@ -16,9 +16,9 @@ class User extends Model{
 class Tool extends Model{
   int toolID;
   string type;
-  int toolCondition;
+  int toolCondition;//moderate priority
   string whoHas;
-  string damageReport;
+  string damageReport;//low priority
   string whenBooked;
   string timeBooked;
 }
