@@ -20,4 +20,6 @@ class Tool extends Model{
   int toolCondition;
   string whoHas;
   string damageReport;
+  string whenBooked;
+  string timeBooked;
 }
