@@ -1,0 +1,32 @@
+When: 9/29 11:30-12:15
+Who: Robert Cole, Jessica Spaven, Qiao Wang
+Where: in-person
+what:
+  We met up and discussed what our program would have. 
+  Tools have ID, type, checkedOut, jobsite, useTime, hoursUntilReplace, timeCheckedOut, whoHas, status. 
+  Users have name, username, password, admin (which states whether or not they have an admin role).
+  We also started discussing User Interface layout.
+
+When: 10/1 11:30-12:15
+Who: Robert Cole, Jessica Spaven, Qiao Wang, Neha Vedantam
+Where: in-person
+What: software program- tools, user, job
+  database
+    tool: id, type, check in status, checked out bool, time ^^ was updated [dd/mm/yyyy  00:00], user with tool,
+      optional string for user report, maintenance status, use time, hours until maintenance required
+    user: id, name (first, last), password, clearance level (supervisor, worker, manager)
+  user interface: worker interface, profile, list of tools for job
+  Further discussed User Interface.
+
+When: 10/11 3:15 
+Who: (those who interacted with the message) Robert Cole, Qiao Wang
+Where: online (Discord message)
+What: I assigned myself (Robert) to make prototypes of our program using an art app (seen in another folder).
+  Qiao was assigned to work on the database since she was the only one taking a database class.  
+  Jessica and Neha were assigned to work together on getTime, timePassed, and makeID.
+
+When: 10/31 3:36  
+Who: (those who interacted with the message) Robert Cole
+Where: online (Discord message)
+  Assigned add and delete for both tool and user classes.
+  Also removed the jobsite aspect of the project due to its redundancy.
