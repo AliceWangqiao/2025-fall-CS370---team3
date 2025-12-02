@@ -7,88 +7,132 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-// It implements CRUD operations (Create, Read, Update, Delete) using JDBC.
+ // All operations use JDBC to connect and interact with the database.
 public class UserDAO implements UserDAOInterface {
 
-    // Add a new user to the database.
+    // Login method: checks if a user exists with the given username and password.
+    @Override
+    public User login(String username, String password) {
+        // SQL query to find a matching user
+        String sql = "SELECT * FROM users WHERE username=? AND password=?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            // Set query parameters
+            ps.setString(1, username);
+            ps.setString(2, password);
+
+            // Execute query
+            ResultSet rs = ps.executeQuery();
+
+            // If user found, create and return User object
+            if (rs.next()) {
+                User user = new User();
+                user.setId(rs.getLong("id"));
+                user.setUsername(rs.getString("username"));
+                user.setPassword(rs.getString("password"));
+                user.setRole(rs.getString("role"));
+                user.setFullName(rs.getString("full_name"));
+                user.setEmail(rs.getString("email"));
+                return user; // login successful
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error during login: " + e.getMessage());
+        }
+
+        return null; // login failed
+    }
+
+
+     // Add a new user to the database.
     @Override
     public boolean addUser(User user) {
-
-        // SQL query with placeholders
+        // SQL insert query
         String sql = "INSERT INTO users (username, password, role, full_name, email) VALUES (?, ?, ?, ?, ?)";
-        try (Connection conn = DBConnection.getConnection();        // Get database connection
-             // Prepare statement to prevent SQL injection and allow generated keys
+
+        try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
-            // Set values in the query from the User object
+            // Set values for query placeholders
             ps.setString(1, user.getUsername());
             ps.setString(2, user.getPassword());
             ps.setString(3, user.getRole());
             ps.setString(4, user.getFullName());
             ps.setString(5, user.getEmail());
 
-            // Execute the query
+            // Execute insert query
             int affected = ps.executeUpdate();
 
-            // If insertion successful, get the auto-generated ID
+            // If insert succeeded, get the auto-generated ID
             if (affected > 0) {
                 ResultSet keys = ps.getGeneratedKeys();
                 if (keys.next()) user.setId(keys.getLong(1));
                 return true;
             }
+
         } catch (SQLException e) {
             System.out.println("Error adding user: " + e.getMessage());
         }
-        return false;
+
+        return false; // insert failed
     }
 
-    // Update an existing user's information in the database.
+
+     // Update an existing user's information in the database.
     @Override
     public boolean updateUser(User user) {
+        // SQL update query
         String sql = "UPDATE users SET username=?, password=?, role=?, full_name=?, email=? WHERE id=?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            // Set new values for the user
+            // Set new values in the query
             ps.setString(1, user.getUsername());
             ps.setString(2, user.getPassword());
             ps.setString(3, user.getRole());
             ps.setString(4, user.getFullName());
             ps.setString(5, user.getEmail());
-            ps.setLong(6, user.getId());        // identify which user to update
+            ps.setLong(6, user.getId()); // identify which user to update
 
+            // Return true if at least 1 row was updated
+            return ps.executeUpdate() > 0;
 
-            return ps.executeUpdate() > 0;       // return true if update affected at least 1 row
         } catch (SQLException e) {
             System.out.println("Error updating user: " + e.getMessage());
         }
-        return false;
+
+        return false; // update failed
     }
 
-    // Delete a user from the database by ID.
+    //Delete a user by their ID.
     @Override
     public boolean deleteUser(long id) {
         String sql = "DELETE FROM users WHERE id=?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setLong(1, id);  // set the user ID to delete
-            return ps.executeUpdate() > 0;      // true if deletion affected a row
+            ps.setLong(1, id); // set the ID to delete
+            return ps.executeUpdate() > 0;
+
         } catch (SQLException e) {
             System.out.println("Error deleting user: " + e.getMessage());
         }
-        return false;
+
+        return false; // deletion failed
     }
 
-    // Get a single user by ID.
+    // Get a single user by their ID.
     @Override
     public User getUserById(long id) {
         String sql = "SELECT * FROM users WHERE id=?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setLong(1, id);      // set ID parameter
-            ResultSet rs = ps.executeQuery();    // // execute query
+            ps.setLong(1, id);
+            ResultSet rs = ps.executeQuery();
+
+            // If user exists, populate and return User object
             if (rs.next()) {
                 User u = new User();
                 u.setId(rs.getLong("id"));
@@ -99,21 +143,25 @@ public class UserDAO implements UserDAOInterface {
                 u.setEmail(rs.getString("email"));
                 return u;
             }
+
         } catch (SQLException e) {
             System.out.println("Error fetching user: " + e.getMessage());
         }
-        return null;
+
+        return null; // user not found
     }
 
-    // Get a list of all users from the database.
+    // Get a list of all users in the system.
     @Override
     public List<User> getAllUsers() {
         List<User> users = new ArrayList<>();
         String sql = "SELECT * FROM users";
+
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
 
+            // Loop through result set and populate list
             while (rs.next()) {
                 User u = new User();
                 u.setId(rs.getLong("id"));
@@ -122,12 +170,13 @@ public class UserDAO implements UserDAOInterface {
                 u.setRole(rs.getString("role"));
                 u.setFullName(rs.getString("full_name"));
                 u.setEmail(rs.getString("email"));
-                users.add(u);       // add each user to the list
+                users.add(u); // add user to list
             }
 
         } catch (SQLException e) {
             System.out.println("Error fetching users: " + e.getMessage());
         }
+
         return users;
     }
 }

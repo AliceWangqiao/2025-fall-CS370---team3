@@ -5,6 +5,7 @@ import java.util.List;
 
 //  UserDAOInterface defines the standard operations for managing User data.
 public interface UserDAOInterface {
+    User login(String username, String password); // login for user or admin
     boolean addUser(User user);     // Add a new user to the system
     boolean updateUser(User user);  // Update an existing user's information
     boolean deleteUser(long id);    // Delete a user by their ID

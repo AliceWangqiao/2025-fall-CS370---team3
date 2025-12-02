@@ -46,4 +46,10 @@ public class UserController implements UserControllerInterface {
     public List<User> getAllUsers() {
         return dao.getAllUsers();
     }
+
+    // Login a user by username and password.
+    @Override
+    public User login(String username, String password) {
+        return dao.login(username, password);
+    }
 }
