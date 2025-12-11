@@ -1,14 +1,26 @@
 package com.toolcheck.dao;
 
-import com.toolcheck.model.User;
+import com.toolcheck.model.UserInterface;
 import java.util.List;
 
-//  UserDAOInterface defines the standard operations for managing User data.
+// Interface for user database operations (login, add, update, delete).
 public interface UserDAOInterface {
-    User login(String username, String password); // login for user or admin
-    boolean addUser(User user);     // Add a new user to the system
-    boolean updateUser(User user);  // Update an existing user's information
-    boolean deleteUser(long id);    // Delete a user by their ID
-    User getUserById(long id);      // Get a user by their ID.
-    List<User> getAllUsers();       // Get all users in the system.
+
+    // Attempts to log in a user with the given username and password
+    UserInterface login(String username, String password);
+
+    // Retrieves a list of all users in the system
+    List<UserInterface> getAllUsers();
+
+    // Retrieves a specific user by their unique ID
+    UserInterface getUser(long id);
+
+    // Adds a new user to the system
+    void addUser(UserInterface user);
+
+    // Updates the information of an existing user
+    void updateUser(UserInterface user);
+
+    // Deletes a user by their unique ID (soft delete or permanent depending on implementation)
+    void deleteUser(long id);
 }

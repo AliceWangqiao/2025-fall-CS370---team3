@@ -1,78 +1,75 @@
 package com.toolcheck.controller;
 
 import com.toolcheck.dao.ToolDAOInterface;
-import com.toolcheck.model.Tool;
+import com.toolcheck.dao.ToolDAO;
+import com.toolcheck.model.ToolInterface;
 
 import java.util.List;
 
-// It acts as a bridge between the data layer (DAO) and the application logic.
+//communicates with the DAO layer (ToolDAO) to perform
+// CRUD operations as well as checkout and return actions for tools.
 public class ToolController implements ToolControllerInterface {
 
-    // DAO interface to perform database or storage operations for tools
-    private final ToolDAOInterface dao;
+    private final ToolDAOInterface toolDAO;
 
-    // This allows the controller to use any DAO implementation.
-    public ToolController(ToolDAOInterface dao) {
-        this.dao = dao;
+    // Default constructor initializes the ToolDAO instance for database operations.
+    public ToolController() {
+        this.toolDAO = new ToolDAO(); // use DAO for DB operations
     }
 
-    // Create a new tool
+   // Get all tools from the system by delegating to the DAO.
     @Override
-    public boolean addTool(Tool tool) {
-        // Normalize condition and status
-        tool.setToolCondition(normalizeCondition(tool.getToolCondition()));
-        tool.setStatus(normalizeStatus(tool.getStatus()));
-        return dao.addTool(tool);
+    public List<ToolInterface> getAllTools() {
+        return toolDAO.getAllTools();
     }
 
-    // Updates an existing tool.
+    // Get a specific tool by its unique ID by delegating to the DAO.
     @Override
-    public boolean updateTool(Tool tool) {
-        tool.setToolCondition(normalizeCondition(tool.getToolCondition()));
-        tool.setStatus(normalizeStatus(tool.getStatus()));
-        return dao.updateTool(tool);
+    public ToolInterface getTool(long id) {
+        return toolDAO.getTool(id);
     }
 
-    // Deletes a tool by ID.
+    // Adds a new tool to the system by delegating to the DAO.
     @Override
-    public boolean deleteTool(long id) {
-        return dao.deleteTool(id);
+    public void addTool(ToolInterface tool) {
+        toolDAO.addTool(tool);
     }
 
-
-    // Get a tool by ID
+    // Updates an existing tool's information by delegating to the DAO.
     @Override
-    public Tool getToolById(long id) {
-        return dao.getToolById(id);
+    public void updateTool(ToolInterface tool) {
+        toolDAO.updateTool(tool);
     }
 
-    // Get all tools in the system.
+    // Deletes a tool by its unique ID by delegating to the DAO.
     @Override
-    public List<Tool> getAllTools() {
-        return dao.getAllTools();
+    public void deleteTool(long id) {
+        toolDAO.deleteTool(id);
     }
 
-    // Ensures the tool condition is valid and standardized.
-    // Converts input to lowercase and trims whitespace.
-    // If the input is invalid or null, defaults to "good".
-    private String normalizeCondition(String cond) {
-        if (cond == null) return "good";
-        cond = cond.trim().toLowerCase();
-        return switch (cond) {
-            case "excellent", "good", "fair", "poor" -> cond;
-            default -> "good";
-        };
+    // Checks out a tool to a specific user.
+    // Delegates to the DAO and handles exceptions.
+    @Override
+    public boolean checkoutTool(long toolId, long userId) {
+        try {
+            toolDAO.checkoutTool(toolId, userId);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
-    // Ensures the tool condition is valid and standardized.
-    // Converts input to lowercase and trims whitespace, and replaces spaces with underscores.
-    // If the input is invalid or null, blank, defaults to "available".
-    private String normalizeStatus(String status) {
-        if (status == null || status.isBlank()) return "available";
-        status = status.trim().toLowerCase().replace(' ', '_');
-        return switch (status) {
-            case "available", "checked_out", "maintenance" -> status;
-            default -> "available";
-        };
+    // Returns a tool from a user and optionally updates its condition.
+    // Delegates to the DAO and handles exceptions.
+    @Override
+    public boolean returnTool(long toolId, long userId, String condition) {
+        try {
+            toolDAO.returnTool(toolId, userId, condition); // report is removed
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }

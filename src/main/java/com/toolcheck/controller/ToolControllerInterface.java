@@ -1,13 +1,38 @@
 package com.toolcheck.controller;
 
-import com.toolcheck.model.Tool;
+import com.toolcheck.model.ToolInterface;
 import java.util.List;
 
-//  It is used by the controller layer to manage users in the system.
+//handles CRUD operations as well as
+//checkout and return actions for tools.
 public interface ToolControllerInterface {
-    boolean addTool(Tool tool);     // Create a new tool in the system.
-    boolean updateTool(Tool tool);  // Update an existing tool's information.
-    boolean deleteTool(long id);    // Delete a tool from the system by their ID.
-    Tool getToolById(long id);      // Get a tool by their ID.
-    List<Tool> getAllTools();       // Get a list of all tools in the system.
+    // Get all tools in the system.
+    List<ToolInterface> getAllTools();
+
+    //Get  a specific tool by its unique ID.
+    ToolInterface getTool(long id);
+
+    //Adds a new tool to the system.
+    void addTool(ToolInterface tool);
+
+    // Updates an existing tool's information.
+    void updateTool(ToolInterface tool);
+
+    // Deletes a tool by its unique ID.
+    void deleteTool(long id);
+
+    // Checks out a tool to a specific user.
+    boolean checkoutTool(long toolId, long userId);
+
+    //Returns a tool from a user and optionally updates its condition.
+    boolean returnTool(long toolId, long userId, String condition);
+
+    // Get all tools currently checked out by a specific user.
+    default List<ToolInterface> getToolsByUser(long userId) {
+
+        // By default, return all tools checked out by user
+        return getAllTools().stream()
+                .filter(t -> t.getUserId() == userId)
+                .toList();
+    }
 }

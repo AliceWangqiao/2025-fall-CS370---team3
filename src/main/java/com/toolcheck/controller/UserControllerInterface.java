@@ -1,14 +1,27 @@
 package com.toolcheck.controller;
 
-import com.toolcheck.model.User;
+import com.toolcheck.model.UserInterface;
 import java.util.List;
 
-// Defines the standard operations for managing users and handling login functionality.
+//acts as an intermediary between the view
+//(e.g., JavaFX UI) and the data access layer (UserDAO).
 public interface UserControllerInterface {
-    boolean createUser(User user);  // Create a new user in the system.
-    boolean updateUser(User user);  // Update an existing user's information.
-    boolean deleteUser(long id);    //  Delete a user from the system by their ID.
-    User getUserById(long id);      // Get a user by their ID.
-    List<User> getAllUsers();       // Get a list of all users in the system.
-    User login(String username, String password); // Login a user with username and password
+
+    //Attempts to log in a user with the provided username and password.
+    UserInterface loginUser(String username, String password);
+
+    // Get all users in the system.
+    List<UserInterface> getAllUsers();
+
+    // Get a specific user by their unique ID.
+    UserInterface getUser(long id);
+
+    //Adds a new user to the system.
+    void addUser(UserInterface user);
+
+    //Updates an existing user's information.
+    void updateUser(UserInterface user);
+
+    //Deletes a user by their unique ID.
+    void deleteUser(long id);
 }

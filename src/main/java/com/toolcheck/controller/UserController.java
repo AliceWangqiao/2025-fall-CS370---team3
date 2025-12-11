@@ -1,55 +1,56 @@
 package com.toolcheck.controller;
 
+import com.toolcheck.dao.UserDAO;
 import com.toolcheck.dao.UserDAOInterface;
-import com.toolcheck.model.User;
+import com.toolcheck.model.UserInterface;
 
 import java.util.List;
 
-//  It acts as a bridge between the data layer (DAO) and the application logic.
+// communicates with the data access layer (UserDAO) to
+// perform login and CRUD operations
 public class UserController implements UserControllerInterface {
 
-    // DAO interface to perform database or storage operations for users
-    private final UserDAOInterface dao;
+    //DAO object for accessing user data
+    private final UserDAOInterface userDAO;
 
-    // This allows the controller to use any DAO implementation.
-    public UserController(UserDAOInterface dao) {
-        this.dao = dao;
+    //Default constructor initializes the UserDAO instance.
+    public UserController() {
+        this.userDAO = new UserDAO();
     }
 
-    // Creates a new user.
+    // Attempts to log in a user by delegating to the DAO.
     @Override
-    public boolean createUser(User user) {
-        if (user.getUsername() == null || user.getUsername().isBlank()) return false;
-        return dao.addUser(user);
+    public UserInterface loginUser(String username, String password) {
+        return userDAO.login(username, password);
     }
 
-    // Updates an existing user.
+    // Get all users from the system by delegating to the DAO.
     @Override
-    public boolean updateUser(User user) {
-        return dao.updateUser(user);
+    public List<UserInterface> getAllUsers() {
+        return userDAO.getAllUsers();
     }
 
-    // Deletes a user by ID.
+    // Get a user by their unique ID by delegating to the DAO.
     @Override
-    public boolean deleteUser(long id) {
-        return dao.deleteUser(id);
+    public UserInterface getUser(long id) {
+        return userDAO.getUser(id);
     }
 
-    // Get a user by ID.
+    // Adds a new user by delegating to the DAO.
     @Override
-    public User getUserById(long id) {
-        return dao.getUserById(id);
+    public void addUser(UserInterface user) {
+        userDAO.addUser(user);
     }
 
-    // Get all users in the system.
+    // Updates an existing user's information by delegating to the DAO.
     @Override
-    public List<User> getAllUsers() {
-        return dao.getAllUsers();
+    public void updateUser(UserInterface user) {
+        userDAO.updateUser(user);
     }
 
-    // Login a user by username and password.
+    // Deletes a user by their unique ID by delegating to the DAO.
     @Override
-    public User login(String username, String password) {
-        return dao.login(username, password);
+    public void deleteUser(long id) {
+        userDAO.deleteUser(id);
     }
 }

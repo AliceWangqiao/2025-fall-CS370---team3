@@ -1,55 +1,80 @@
 package com.toolcheck.model;
 
-// It extends the Model class to inherit common fields like id and createdAt.
-public class User extends Model {
-    private String username;        // Username of the user (must be unique)
-    private String password;        // Password for login
-    private String role = "user";   // Role of the user, default is "user" (can be "admin")
-    private String fullName;        // Full name of the user
-    private String email;           // Email address of the user
+//User class implementing UserInterface, holding basic user information.
+public class User implements UserInterface {
+    // Unique ID of the user
+    private long id;
 
-    // No-argument constructor.
-    // Useful for creating an empty Tool object and setting fields later.
+    // Username for login
+    private String username;
+
+    // Password for login
+    private String password;
+
+    // Role of the user (e.g., admin, user)
+    private String role;
+
+    // Full name of the user
+    private String fullName;
+
+    // Email address of the user
+    private String email;
+
+    // if the user is deleted
+    private boolean deleted;
+
+    // Default constructor
     public User() {}
 
-    // Constructor to create a new User with all details.
-    public User(String username, String password, String role, String fullName, String email) {
+    // Convenience constructor to initialize all user fields
+    public User(long id, String username, String password, String role, String fullName, String email) {
+        this.id = id;
         this.username = username;
         this.password = password;
-        if(role != null && !role.isBlank()) this.role = role;
+        this.role = role;
         this.fullName = fullName;
         this.email = email;
     }
 
-    // Getters and setters
-    public String getUsername() {
-        return username;        // Get the username of the user
-    }
-    public void setUsername(String username) {
-        this.username = username; // Set the username of the user
-    }
-    public String getPassword() {
-        return password;            // Get the password of the user
-    }
-    public void setPassword(String password) {
-        this.password = password;  // Set the password of the user
-    }
-    public String getRole() {
-        return role;                // Get the role of the user (admin/user)
-    }
-    public void setRole(String role) {
-        this.role = role;           // Set the role of the user
-    }
-    public String getFullName() {
-        return fullName;           // Get the full name of the user
-    }
-    public void setFullName(String fullName) {
-        this.fullName = fullName; // Set the full name of the user
-    }
-    public String getEmail() {
-        return email;               // Get the email address of the user
-    }
-    public void setEmail(String email) {
-        this.email = email;         // Set the email address of the user
-    }
+    // Gets the ID of the user
+    @Override public long getId() { return id; }
+
+    // Sets the ID of the user
+    @Override public void setId(long id) { this.id = id; }
+
+    // Gets the username of the user
+    @Override public String getUsername() { return username; }
+
+    // Sets the username of the user
+    @Override public void setUsername(String username) { this.username = username; }
+
+    // Gets the password of the user
+    @Override public String getPassword() { return password; }
+
+    // Sets the password of the user
+    @Override public void setPassword(String password) { this.password = password; }
+
+    // Gets the role of the user
+    @Override public String getRole() { return role; }
+
+    // Sets the role of the user
+    @Override public void setRole(String role) { this.role = role; }
+
+    // Gets the full name of the user
+    @Override public String getFullName() { return fullName; }
+
+    // Sets the full name of the user
+    @Override public void setFullName(String fullName) { this.fullName = fullName; }
+
+    // Gets the email of the user
+    @Override public String getEmail() { return email; }
+
+    // Sets the email of the user
+    @Override public void setEmail(String email) { this.email = email; }
+
+    // Checks if the user is marked as deleted
+    @Override public boolean isDeleted() { return deleted; }
+
+    // Sets the deleted flag of the user
+    @Override public void setDeleted(boolean deleted) { this.deleted = deleted; }
 }

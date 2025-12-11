@@ -2,93 +2,74 @@ package com.toolcheck;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.sql.Statement;
 
-// DBConnection handles H2 database initialization.
+// Uses H2 database with automatic server.
 public class DBConnection {
 
-    private static final String DB_URL = "jdbc:h2:file:./data/ToolCheckSystem;AUTO_SERVER=FALSE";
-    private static final String DB_USER = "sa";
-    private static final String DB_PASSWORD = "";
+    // JDBC URL for H2 database in user home directory with AUTO_SERVER mode
+    private static final String DB_URL = "jdbc:h2:~/toolcheckDB;AUTO_SERVER=TRUE";
 
-    // Static block runs once to create tables
-    static {
-        try (Connection conn = getConnection(); Statement stmt = conn.createStatement()) {
+    // Database username
+    private static final String USER = "sa";
 
-            // Users table
-            stmt.executeUpdate(
-                    "CREATE TABLE IF NOT EXISTS users (" +
-                            "id IDENTITY PRIMARY KEY," +
-                            "username VARCHAR(50) UNIQUE NOT NULL," +
-                            "password VARCHAR(255) NOT NULL," +
-                            "role VARCHAR(10) DEFAULT 'user'," +
-                            "full_name VARCHAR(100)," +
-                            "email VARCHAR(100)," +
-                            "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP" +
-                            ")"
-            );
+    // Database password (empty for default H2)
+    private static final String PASS = "";
 
-            // Tools table
-            stmt.executeUpdate(
-                    "CREATE TABLE IF NOT EXISTS tools (" +
-                            "id IDENTITY PRIMARY KEY," +
-                            "name VARCHAR(100) NOT NULL," +
-                            "description CLOB," +
-                            "category VARCHAR(100)," +
-                            "tool_condition VARCHAR(10) DEFAULT 'good'," +
-                            "status VARCHAR(15) DEFAULT 'available'," +
-                            "location VARCHAR(100)," +
-                            "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP," +
-                            "CHECK (tool_condition IN ('excellent','good','fair','poor'))," +
-                            "CHECK (status IN ('available','checked_out','maintenance'))" +
-                            ")"
-            );
+    // establishes and returns a database connection.
+    public static Connection getConnection() {
 
-            // Checkout Records table
-            stmt.executeUpdate(
-                    "CREATE TABLE IF NOT EXISTS checkout_records (" +
-                            "id IDENTITY PRIMARY KEY," +
-                            "user_id BIGINT," +
-                            "tool_id BIGINT," +
-                            "checkout_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP," +
-                            "return_date TIMESTAMP NULL," +
-                            "condition_before VARCHAR(10)," +
-                            "condition_after VARCHAR(10) NULL," +
-                            "status VARCHAR(15) DEFAULT 'checked_out'," +
-                            "FOREIGN KEY (user_id) REFERENCES users(id)," +
-                            "FOREIGN KEY (tool_id) REFERENCES tools(id)," +
-                            "CHECK (condition_before IN ('excellent','good','fair','poor'))," +
-                            "CHECK (condition_after IN ('excellent','good','fair','poor'))," +
-                            "CHECK (status IN ('checked_out','returned','overdue'))" +
-                            ")"
-            );
-
-            // Reports table
-            stmt.executeUpdate(
-                    "CREATE TABLE IF NOT EXISTS reports (" +
-                            "id IDENTITY PRIMARY KEY," +
-                            "user_id BIGINT," +
-                            "tool_id BIGINT," +
-                            "report_type VARCHAR(15)," +
-                            "description CLOB," +
-                            "reported_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP," +
-                            "status VARCHAR(10) DEFAULT 'pending'," +
-                            "FOREIGN KEY (user_id) REFERENCES users(id)," +
-                            "FOREIGN KEY (tool_id) REFERENCES tools(id)," +
-                            "CHECK (report_type IN ('damage','maintenance','lost'))," +
-                            "CHECK (status IN ('pending','resolved'))" +
-                            ")"
-            );
-
-            System.out.println("Database initialized successfully!");
-
-        } catch (SQLException e) {
-            System.err.println("Failed to initialize database: " + e.getMessage());
+        try {
+            // Attempt to connect to the H2 database
+            return DriverManager.getConnection(DB_URL, USER, PASS);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
     }
 
-    public static Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+
+    public static void initDB() {
+        try (Connection conn = getConnection();
+             Statement stmt = conn.createStatement()) {
+
+            // Users table
+            stmt.execute("CREATE TABLE IF NOT EXISTS users (" +
+                    "id BIGINT AUTO_INCREMENT PRIMARY KEY, " +
+                    "username VARCHAR(50) UNIQUE NOT NULL, " +
+                    "fullName VARCHAR(100), " +
+                    "password VARCHAR(50) NOT NULL, " +
+                    "role VARCHAR(20), " +
+                    "email VARCHAR(100), " +
+                    "deleted BOOLEAN DEFAULT FALSE" +
+                    ")");
+
+            // Insert default admin and user accounts if they do not exist.
+            stmt.execute("MERGE INTO users (username, fullName, password, role, email) KEY(username) " +
+                    "VALUES('admin','Admin Admin','admin123','admin','admin@example.com')");
+
+            stmt.execute("MERGE INTO users (username, fullName, password, role, email) KEY(username) " +
+                    "VALUES('user1','John Doe','user123','user','john@example.com')");
+
+            // Tools table
+            stmt.execute("CREATE TABLE IF NOT EXISTS tools (" +
+                    "id BIGINT AUTO_INCREMENT PRIMARY KEY, " +
+                    "name VARCHAR(100) NOT NULL, " +
+                    "condition VARCHAR(50), " +
+                    "status VARCHAR(50), " +
+                    "userId BIGINT DEFAULT 0" +
+                    ")");
+
+            // Insert sample tools if they do not exist.
+            stmt.execute("MERGE INTO tools (name, condition, status, userId) KEY(name) VALUES('Hammer','Good','Available',0)");
+            stmt.execute("MERGE INTO tools (name, condition, status, userId) KEY(name) VALUES('Screwdriver','Fair','Available',0)");
+            stmt.execute("MERGE INTO tools (name, condition, status, userId) KEY(name) VALUES('Wrench','Good','Available',0)");
+
+
+            System.out.println("Database initialized successfully!");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
